@@ -49,7 +49,13 @@ namespace Platformer.Mechanics
         
         int minMessPeriod = 1000;
         int maxMessPeriod = 10000;
+
+        int minVelocity = 2;
+        int maxVelocity = 15;
+
+
         int inverseControlsCounter = 1000;
+        int changeVelocityCounter = 1000;
 
         bool inverseControls = false;
         #endregion
@@ -59,6 +65,8 @@ namespace Platformer.Mechanics
         {
             stopwatch.Start();
             inverseControlsCounter = UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
+
+            changeVelocityCounter = UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
 
 
             health = GetComponent<Health>();
@@ -73,10 +81,11 @@ namespace Platformer.Mechanics
             Debug.Log(inverseControlsCounter);
             if(stopwatch.ElapsedMilliseconds > inverseControlsCounter){
                 inverseControls = !inverseControls;
-                int inverseControlsCounter= UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
-                stopwatch.Reset();
-                stopwatch.Start();
-                
+                inverseControlsCounter += UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
+            }
+            if(stopwatch.ElapsedMilliseconds > changeVelocityCounter){
+                maxSpeed = UnityEngine.Random.Range(minVelocity,maxVelocity);
+                changeVelocityCounter += UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
             }
 
             if (controlEnabled)
