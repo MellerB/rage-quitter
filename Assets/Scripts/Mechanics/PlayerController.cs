@@ -5,6 +5,7 @@ using Platformer.Gameplay;
 using static Platformer.Core.Simulation;
 using Platformer.Model;
 using Platformer.Core;
+using System;
 
 namespace Platformer.Mechanics
 {
@@ -17,6 +18,7 @@ namespace Platformer.Mechanics
         public AudioClip jumpAudio;
         public AudioClip respawnAudio;
         public AudioClip ouchAudio;
+        
 
         /// <summary>
         /// Max horizontal speed of the player.
@@ -42,8 +44,23 @@ namespace Platformer.Mechanics
 
         public Bounds Bounds => collider2d.bounds;
 
+        #region new code
+        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        
+        int minMessPeriod = 1000;
+        int maxMessPeriod = 10000;
+        int inverseControlsCounter = 1000;
+
+        bool inverseControls = false;
+        #endregion
+
+
         void Awake()
         {
+            stopwatch.Start();
+            inverseControlsCounter = UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
+
+
             health = GetComponent<Health>();
             audioSource = GetComponent<AudioSource>();
             collider2d = GetComponent<Collider2D>();
@@ -53,9 +70,22 @@ namespace Platformer.Mechanics
 
         protected override void Update()
         {
+            Debug.Log(inverseControlsCounter);
+            if(stopwatch.ElapsedMilliseconds > inverseControlsCounter){
+                inverseControls = !inverseControls;
+                int inverseControlsCounter= UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
+                stopwatch.Reset();
+                stopwatch.Start();
+                
+            }
+
             if (controlEnabled)
             {
                 move.x = Input.GetAxis("Horizontal");
+                
+                if(inverseControls){
+                    move.x = -move.x;
+                }
                 if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump"))
                     jumpState = JumpState.PrepareToJump;
                 else if (Input.GetButtonUp("Jump"))
