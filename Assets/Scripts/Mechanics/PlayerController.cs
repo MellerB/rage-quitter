@@ -45,29 +45,41 @@ namespace Platformer.Mechanics
         public Bounds Bounds => collider2d.bounds;
 
         #region new code
-        System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-        
-        int minMessPeriod = 1000;
-        int maxMessPeriod = 10000;
-
         int minVelocity = 2;
         int maxVelocity = 15;
 
-
-        int inverseControlsCounter = 1000;
-        int changeVelocityCounter = 1000;
-
         bool inverseControls = false;
         #endregion
-
+        IrritatorsManager irritatorsManager = new IrritatorsManager();
 
         void Awake()
         {
-            stopwatch.Start();
-            inverseControlsCounter = UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
+            irritatorsManager.AddIrritator(() => {
+                inverseControls=!inverseControls;
+                Debug.Log("XDDD");
+            },3000,10000);
 
-            changeVelocityCounter = UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
+            irritatorsManager.AddIrritator(() => {
+                maxSpeed = UnityEngine.Random.Range(minVelocity,maxVelocity);
+                Debug.Log("Brzrzrzrz");
+            },3000,10000);
 
+
+            
+            irritatorsManager.AddIrritator(() => {
+                disableControls();
+                Invoke("enableControls",1);
+                Debug.Log("hehehe controls disabled");
+            },3000,10000);
+
+
+            irritatorsManager.AddIrritator(() => {
+                //set takeoff speed to 0 and than again to 7 (after delay)
+                Debug.Log("heheh you won't jump x");
+            },300,1000);
+
+
+            irritatorsManager.Start();
 
             health = GetComponent<Health>();
             audioSource = GetComponent<AudioSource>();
@@ -76,17 +88,12 @@ namespace Platformer.Mechanics
             animator = GetComponent<Animator>();
         }
 
+        void enableControls(){controlEnabled = true;}
+        void disableControls(){controlEnabled = false;}
+
         protected override void Update()
         {
-            Debug.Log(inverseControlsCounter);
-            if(stopwatch.ElapsedMilliseconds > inverseControlsCounter){
-                inverseControls = !inverseControls;
-                inverseControlsCounter += UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
-            }
-            if(stopwatch.ElapsedMilliseconds > changeVelocityCounter){
-                maxSpeed = UnityEngine.Random.Range(minVelocity,maxVelocity);
-                changeVelocityCounter += UnityEngine.Random.Range(minMessPeriod,maxMessPeriod);
-            }
+            irritatorsManager.CheckForUpdates();
 
             if (controlEnabled)
             {
