@@ -50,36 +50,41 @@ namespace Platformer.Mechanics
 
         bool inverseControls = false;
         #endregion
-        IrritatorsManager irritatorsManager = new IrritatorsManager();
+        IrritatorsManager irritatorsManager;
+        int defaultMinTimeRange = 10000;
+        int defaultMaxTimeRange = 30000;
 
         void Awake()
         {
-            irritatorsManager.AddIrritator(() => {
-                inverseControls=!inverseControls;
-                Debug.Log("XDDD");
-            },3000,10000);
 
-            irritatorsManager.AddIrritator(() => {
-                maxSpeed = UnityEngine.Random.Range(minVelocity,maxVelocity);
-                Debug.Log("Brzrzrzrz");
-            },3000,10000);
+            irritatorsManager = new IrritatorsManager(this);
+            irritatorsManager.Start();
+            irritatorsManager.AddIrritator(
+                () => {inverseControls = true;},
+                () => {inverseControls = false;},
+                2,
+                defaultMinTimeRange,defaultMaxTimeRange);
+
+            irritatorsManager.AddIrritator(
+                () => {maxSpeed = UnityEngine.Random.Range(minVelocity,maxVelocity);},
+                () => {maxSpeed = 7;},
+                2,
+                defaultMinTimeRange,defaultMaxTimeRange);
+
+            irritatorsManager.AddIrritator(
+                () => {controlEnabled = false;},
+                () => {controlEnabled = true;},
+                2,
+                defaultMinTimeRange,defaultMaxTimeRange);
+
+            irritatorsManager.AddIrritator(
+                () => {jumpTakeOffSpeed = 1;},
+                () => {jumpTakeOffSpeed = 7;},
+                2,
+                defaultMinTimeRange,defaultMaxTimeRange);
 
 
             
-            irritatorsManager.AddIrritator(() => {
-                disableControls();
-                Invoke("enableControls",1);
-                Debug.Log("hehehe controls disabled");
-            },3000,10000);
-
-
-            irritatorsManager.AddIrritator(() => {
-                //set takeoff speed to 0 and than again to 7 (after delay)
-                Debug.Log("heheh you won't jump x");
-            },300,1000);
-
-
-            irritatorsManager.Start();
 
             health = GetComponent<Health>();
             audioSource = GetComponent<AudioSource>();
@@ -88,8 +93,6 @@ namespace Platformer.Mechanics
             animator = GetComponent<Animator>();
         }
 
-        void enableControls(){controlEnabled = true;}
-        void disableControls(){controlEnabled = false;}
 
         protected override void Update()
         {

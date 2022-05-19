@@ -7,28 +7,43 @@ using Platformer.Model;
 using Platformer.Core;
 using System;
 
+
+
 namespace Platformer.Mechanics
 {
     public class Irritator{
-
+        MonoBehaviour mb;
         long minTime;
         long maxTime;
         long counter;
-        Action callback;
+        int effectDuration;
+        Action enableEffect;
+        Action disableEffect;
 
-        public Irritator(Action _callback,long _minTime, long _maxTime){
-            callback = _callback;
+        public Irritator(Action _enableEffect, Action _disableEffect,int _effectDuration ,long _minTime, long _maxTime, MonoBehaviour _mb){
+            mb = _mb;
+            effectDuration = _effectDuration;
+            enableEffect = _enableEffect;
+            disableEffect = _disableEffect;
             minTime = _minTime;
             maxTime = _maxTime;
             counter = (long)UnityEngine.Random.Range(minTime,maxTime);
+            Debug.Log(effectDuration);
+        }
+
+        private IEnumerator coroutine(){
+            enableEffect();
+            yield return new WaitForSeconds(effectDuration);
+            disableEffect();
         }
 
         public void CheckForCalls(long stopwatch){
-            
             if( stopwatch > counter){
-                Debug.Log(stopwatch);
+                Debug.Log(effectDuration);
                 counter+=(long)UnityEngine.Random.Range(minTime,maxTime);
-                callback();
+                Debug.Log(coroutine());
+                Debug.Log(mb);
+                mb.StartCoroutine(coroutine());
             }
         }
 

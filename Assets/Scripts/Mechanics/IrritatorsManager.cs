@@ -13,8 +13,11 @@ namespace Platformer.Mechanics
 
         System.Diagnostics.Stopwatch stopwatch;
         List<Irritator> Irritators;
+        MonoBehaviour mb;
 
-        public IrritatorsManager(){
+
+        public IrritatorsManager(MonoBehaviour _mb){
+            mb = _mb;
             stopwatch = new System.Diagnostics.Stopwatch();
             Irritators = new List<Irritator>();
         }
@@ -26,12 +29,13 @@ namespace Platformer.Mechanics
         public void CheckForUpdates(){
             
             foreach(var i in Irritators){
-                i.CheckForCalls(stopwatch.ElapsedMilliseconds);
+                var t = stopwatch.ElapsedMilliseconds;
+                i.CheckForCalls(t);
             } 
         }
 
-        public void AddIrritator(Action callback, long minTime, long maxTime){
-            Irritators.Add(new Irritator(callback,minTime,maxTime));
+        public void AddIrritator(Action enableEffect, Action disableEffect, int effectDuration, long minTime, long maxTime){        
+            Irritators.Add(new Irritator(enableEffect, disableEffect, effectDuration,minTime,maxTime,mb));
         }
 
 
