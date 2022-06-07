@@ -13,7 +13,6 @@ namespace Platformer.Gameplay
     public class PlayerDeath : Simulation.Event<PlayerDeath>
     {
         PlatformerModel model = Simulation.GetModel<PlatformerModel>();
-
         public override void Execute()
         {
             var player = model.player;
@@ -31,6 +30,18 @@ namespace Platformer.Gameplay
                 player.animator.SetBool("dead", true);
                 Simulation.Schedule<PlayerSpawn>(2);
             }
+        }
+
+        public void ToggleObject(GameObject component)
+        {
+            component.SetActive(true);
+            WaitDisable(component, 3);
+        }
+
+        IEnumerator WaitDisable(GameObject obj, float waitTime)
+        {
+            yield return new WaitForSeconds(waitTime);
+            obj.SetActive(false);
         }
     }
 }
